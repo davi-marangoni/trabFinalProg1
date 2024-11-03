@@ -1,4 +1,5 @@
 import utils.Teclado;
+import animais.*;
 
 public class Principal {
     public static void main(String[] args) {
