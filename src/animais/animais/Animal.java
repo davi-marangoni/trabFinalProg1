@@ -6,6 +6,7 @@ public abstract class Animal {
     private double peso;
     private int idade;
     private LocalDate dataChegada; 
+    private int IDlote;
   
     public int getID(){
         return ID;
@@ -38,4 +39,12 @@ public abstract class Animal {
     public void setDataChegada(LocalDate dataChegada){
         this.dataChegada=dataChegada;
     }
+
+     public void setIDlote(int IDlote) {
+        this.IDlote = IDlote;
+    }
+    
+    public int getIDlote(){
+     return IDlote;
+   }
 }
