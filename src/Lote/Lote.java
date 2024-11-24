@@ -1,48 +1,68 @@
 package Lote;
 
 import java.util.*;
+import java.io.Serializable;
+import animais.animais.*;
 
-import Animais.Animal;
+public class Lote<T> implements Iterable<T>, Serializable {
 
-public class Lote<T> implements Iterable<T> {
-
+    private static final long serialVersionUID = 1L;
     private List<T> lista; 
     private int cdlote;
+    private int tipoAnimal; // Tipo de animal permitido (1=Bovino, 2=Ave, 3=Suino)
     private int removerLote = 0;
    
     public Lote() {
         lista = new ArrayList<>(); 
     }
 
-    public int mostraridlote(){
+    public void setIdLote(int idLote) {
+        this.cdlote = idLote;
+    }
+
+    public int getIdLote() {
         return cdlote;
+    }
+
+    public void setTipoAnimal(int tipoAnimal) {
+        this.tipoAnimal = tipoAnimal;
+    }
+
+    public int getTipoAnimal() {
+        return tipoAnimal;
     }
 
 
     //Aqui é usado tipoAnimal para identificação da classe para casting correto. 
     public void adicionarLote(T objeto, int tipoAnimal, int IDlote) {
+
+        if (this.tipoAnimal != tipoAnimal) {
+            System.out.println("Erro: Animal nao eh do tipo esperado pelo lote");
+            return;
+        }
+
         if (lista != null) {
            switch (tipoAnimal) {
             case 1:
-                if(objeto instanceof Animais.Bovino){
+                if(objeto instanceof animais.animais.Bovino){
                     lista.add(objeto);
-                    ((Animais.Bovino)objeto).setIDlote(IDlote);
+                    ((animais.animais.Bovino)objeto).setIDlote(IDlote);
                 } else{
                     System.out.println("Animal não corresponde ao tipo informado.");
                 }
             break;
             case 2:
-                if(objeto instanceof Animais.Ave){
+                if(objeto instanceof animais.animais.Ave){
                     lista.add(objeto);
-                    ((Animais.Ave)objeto).setIDlote(IDlote);
+                    ((animais.animais.Ave)objeto).setIDlote(IDlote);
                 } else{
                     System.out.println("Animal não corresponde ao tipo informado.");
                 }
             break;
             case 3:
-                if(objeto instanceof Animais.Suino){
+                if(objeto instanceof animais.animais.Suino){
                     lista.add(objeto);
-                    ((Animais.Suino)objeto).setIDlote(IDlote);
+                    ((animais.animais.Suino)objeto).setIDlote(IDlote);
                 } else{
                     System.out.println("Animal não corresponde ao tipo informado.");
                 }
@@ -55,23 +75,21 @@ public class Lote<T> implements Iterable<T> {
           
         }
     }
-
-    
-   
+ 
     public void removerLote(int IDlote) {
         lista.removeIf(elemento -> {
-            if (elemento instanceof Animais.Suino && ((Animais.Suino) elemento).getIDlote() == IDlote) {
-                ((Animais.Suino) elemento).setIDlote(0);
+            if (elemento instanceof animais.animais.Suino && ((animais.animais.Suino) elemento).getIDlote() == IDlote) {
+                ((animais.animais.Suino) elemento).setIDlote(0);
                 removerLote = 1;
                 return true; 
             }
-            if (elemento instanceof Animais.Ave && ((Animais.Ave) elemento).getIDlote() == IDlote) {
-                ((Animais.Ave) elemento).setIDlote(0);
+            if (elemento instanceof animais.animais.Ave && ((animais.animais.Ave) elemento).getIDlote() == IDlote) {
+                ((animais.animais.Ave) elemento).setIDlote(0);
                 removerLote = 1;
                 return true; 
             }
-            if (elemento instanceof Animais.Bovino && ((Animais.Bovino) elemento).getIDlote() == IDlote) {
-                ((Animais.Bovino) elemento).setIDlote(0);
+            if (elemento instanceof animais.animais.Bovino && ((animais.animais.Bovino) elemento).getIDlote() == IDlote) {
+                ((animais.animais.Bovino) elemento).setIDlote(0);
                 removerLote = 1;
                 return true; 
             }
@@ -89,18 +107,18 @@ public class Lote<T> implements Iterable<T> {
 
     public void removerAnimalote(int IDanimal) {
         lista.removeIf(elemento -> {
-            if (elemento instanceof Animais.Suino && ((Animais.Suino) elemento).getID() == IDanimal) {
-                ((Animais.Suino) elemento).setIDlote(0);
+            if (elemento instanceof animais.animais.Suino && ((animais.animais.Suino) elemento).getID() == IDanimal) {
+                ((animais.animais.Suino) elemento).setIDlote(0);
                 removerLote = 1;
                 return true; 
             }
-            if (elemento instanceof Animais.Ave && ((Animais.Ave) elemento).getID() == IDanimal) {
-                ((Animais.Ave) elemento).setIDlote(0);
+            if (elemento instanceof animais.animais.Ave && ((animais.animais.Ave) elemento).getID() == IDanimal) {
+                ((animais.animais.Ave) elemento).setIDlote(0);
                 removerLote = 1;
                 return true; 
             }
-            if (elemento instanceof Animais.Bovino && ((Animais.Bovino) elemento).getID() == IDanimal) {
-                ((Animais.Bovino) elemento).setIDlote(0);
+            if (elemento instanceof animais.animais.Bovino && ((animais.animais.Bovino) elemento).getID() == IDanimal) {
+                ((animais.animais.Bovino) elemento).setIDlote(0);
                 removerLote = 1;
                 return true; 
             }
@@ -117,22 +135,26 @@ public class Lote<T> implements Iterable<T> {
 
 
     public void imprimirLotes() {
-        System.out.println("Lote:          Tipo Animal:         ID Animal:");
-        for (T elemento : lista) { 
-            if(elemento instanceof Animais.Suino){
-                      System.out.println(((Animais.Suino)elemento).getIDlote()+"              Suino                "+((Animais.Suino)elemento).getID());  
-            } else{
-                      if(elemento instanceof Animais.Bovino){
-                          System.out.println(((Animais.Bovino)elemento).getIDlote()+"              Bovino               "+((Animais.Bovino)elemento).getID());  
-                      } else{
-                         if(elemento instanceof Animais.Ave){
-                                     System.out.println(((Animais.Ave)elemento).getIDlote()+"              Ave                  "+((Animais.Ave)elemento).getID());  
-                         } else{
-                                     System.out.println("Tipo de animal não encontrado.");
-                         }
-                   }
-           } 
-       }
+        if (lista.isEmpty()) {
+            System.out.println("Lote: " + cdlote + " está vazio.");
+        } else {
+            System.out.println("Lote:          Tipo Animal:         ID Animal:");
+            for (T elemento : lista) { 
+                if(elemento instanceof animais.animais.Suino){
+                        System.out.println(((animais.animais.Suino)elemento).getIDlote()+"              Suino                "+((animais.animais.Suino)elemento).getID());  
+                } else {
+                    if(elemento instanceof animais.animais.Bovino){
+                        System.out.println(((animais.animais.Bovino)elemento).getIDlote()+"              Bovino               "+((animais.animais.Bovino)elemento).getID());  
+                    } else{
+                        if(elemento instanceof animais.animais.Ave){
+                                    System.out.println(((animais.animais.Ave)elemento).getIDlote()+"              Ave                  "+((animais.animais.Ave)elemento).getID());  
+                        } else{
+                                    System.out.println("Tipo de animal não encontrado.");
+                        }
+                    }
+                } 
+            }
+        }
    }
 
 
@@ -140,22 +162,22 @@ public class Lote<T> implements Iterable<T> {
     int verificaLote = 0;
     System.out.println("Lote:          Tipo Animal:         ID Animal:");
     for (T elemento : lista) { 
-        if(elemento instanceof Animais.Suino){
-                 if (((Animais.Suino) elemento).getIDlote() == IDlote) {
-                    System.out.println(((Animais.Suino)elemento).getIDlote()+"              Suino                "+((Animais.Suino)elemento).getID());
+        if(elemento instanceof animais.animais.Suino){
+                 if (((animais.animais.Suino) elemento).getIDlote() == IDlote) {
+                    System.out.println(((animais.animais.Suino)elemento).getIDlote()+"              Suino                "+((animais.animais.Suino)elemento).getID());
                     verificaLote = 1;
                  }
                     
         } else{
-                  if(elemento instanceof Animais.Bovino){
-                       if (((Animais.Bovino)elemento).getIDlote() == IDlote){
-                            System.out.println(((Animais.Bovino)elemento).getIDlote()+"              Bovino               "+((Animais.Bovino)elemento).getID());
+                  if(elemento instanceof animais.animais.Bovino){
+                       if (((animais.animais.Bovino)elemento).getIDlote() == IDlote){
+                            System.out.println(((animais.animais.Bovino)elemento).getIDlote()+"              Bovino               "+((animais.animais.Bovino)elemento).getID());
                             verificaLote = 1;
                         }  
                   } else{
-                     if(elemento instanceof Animais.Ave){
-                           if (((Animais.Ave)elemento).getIDlote() == IDlote){
-                                   System.out.println(((Animais.Ave)elemento).getIDlote()+"              Ave                  "+((Animais.Ave)elemento).getID());  
+                     if(elemento instanceof animais.animais.Ave){
+                           if (((animais.animais.Ave)elemento).getIDlote() == IDlote){
+                                   System.out.println(((animais.animais.Ave)elemento).getIDlote()+"              Ave                  "+((animais.animais.Ave)elemento).getID());  
                                    verificaLote = 1;
                            }
                      } else{

@@ -1,8 +1,10 @@
-package animais;
+package animais.animais;
 
 import java.time.LocalDate;
+import java.io.Serializable;
 
-public class Bovino extends Animal{
+public class Bovino extends Animal implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String racaBoi;
     private double percentualMusculo;
     private double percentualGordura;

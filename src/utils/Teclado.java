@@ -3,6 +3,9 @@ package utils;
 
 import java.util.Scanner;
 import java.util.InputMismatchException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  * Essa classe foi criada para utilizar o Scanner. Cada método cria um objeto
@@ -137,10 +140,29 @@ public class Teclado {
      * 
      * @return O valor double dado de entrada
      */
-    public static int readDouble(String mensagem) {
+    public static double readDouble(String mensagem) {
 
         System.out.println("\n" + mensagem);
         return readDouble();
 
+    }
+
+    public static LocalDate readDate(String mensagem) {
+        System.out.println("\n" + mensagem);
+        LocalDate data = null;
+        boolean dataValida = false;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        while (!dataValida) {
+            try {
+                String entrada = readString();
+                data = LocalDate.parse(entrada, formatter);
+                dataValida = true;
+            } catch (DateTimeParseException e) {
+                System.out.println("Formato inválido! Certifique-se de usar o formato AAAA-MM-DD.");
+            }
+        }
+
+        return data;
     }
 }

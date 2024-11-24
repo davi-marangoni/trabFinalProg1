@@ -1,7 +1,10 @@
-package animais;
+package animais.animais;
 import java.time.LocalDate;
-public abstract class Animal {
+import java.io.Serializable;
 
+public abstract class Animal implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     private int ID; 
     private double peso;
     private int idade;
