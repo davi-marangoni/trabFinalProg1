@@ -69,7 +69,7 @@ public class Principal {
         }
     }
 
-        public static void gerenciarAnimal() {
+    public static void gerenciarAnimal() {
         menuAnimal();
         int opcao = Teclado.readInt("Escolha uma opção:");
         switch (opcao) {
@@ -82,14 +82,11 @@ public class Principal {
 
                 if (opcaoAnimal == 1) {
                     cadastrarAnimal(new Bovino(0, 0, 0, LocalDate.now(), "", 0, 0));
-                }
-                else if (opcaoAnimal == 2) {
+                } else if (opcaoAnimal == 2) {
                     cadastrarAnimal(new Ave(0, 0, 0, LocalDate.now(), ""));
-                }
-                else if (opcaoAnimal == 3) {
+                } else if (opcaoAnimal == 3) {
                     cadastrarAnimal(new Suino(0, 0, 0, LocalDate.now(), 0));
-                }  
-                else {
+                } else {
                     System.out.println("Opção inválida.");
                 }
                 break;
@@ -127,11 +124,20 @@ public class Principal {
 
     public static void excluirLote() {
         int idLote = Teclado.readInt("Digite o ID do lote a excluir:");
-        listaLotes.removeIf(lote -> lote.getIdLote() == idLote);
-        System.out.println("Lote excluído com sucesso!");
+        boolean loteRemovido = listaLotes.removeIf(lote -> lote.getIdLote() == idLote);
+
+        if (loteRemovido) {
+            System.out.println("Lote excluído com sucesso!");
+        } else {
+            System.out.println("Lote não encontrado.");
+        }
     }
 
     public static void listarLotes() {
+        if (listaLotes.isEmpty()) {
+            System.out.println("Nenhum lote cadastrado.");
+            return;
+        }
         for (Lote<Animal> lote : listaLotes) {
             lote.imprimirLotes();
         }
@@ -141,7 +147,7 @@ public class Principal {
         int idLote = Teclado.readInt("Digite o ID do lote a listar:");
         for (Lote<Animal> lote : listaLotes) {
             if (lote.getIdLote() == idLote) {
-                lote.imprimirLotes();
+                lote.imprimirLote(idLote);
                 return;
             }
         }
@@ -150,12 +156,23 @@ public class Principal {
 
     public static void removerAnimalDeLote() {
         int idAnimal = Teclado.readInt("Digite o ID do animal a remover:");
+        boolean encontrado = false;
+
         for (Lote<Animal> lote : listaLotes) {
-            lote.removerAnimalote(idAnimal);
+            if (lote.removerAnimalote(idAnimal)) {
+                encontrado = true;
+                break;
+            }
+        }
+
+        if (encontrado) {
+            System.out.println("Animal removido com sucesso.");
+        } else {
+            System.out.println("Animal não encontrado.");
         }
     }
 
-public static void cadastrarAnimal(Animal tipoAnimal) {
+    public static void cadastrarAnimal(Animal tipoAnimal) {
         int id = Teclado.readInt("Digite o ID do animal:");
 
         Animal animal = buscarAnimalPorID(id);
@@ -180,7 +197,7 @@ public static void cadastrarAnimal(Animal tipoAnimal) {
         } else if (tipoAnimal instanceof Suino) {
             double percentualCarneMagra = Teclado.readDouble("Digite o percentual de carne magra:");
             tipoAnimal = new Suino(id, peso, idade, data, percentualCarneMagra);
-            tipoAnimalInt = 3; // Suino
+            tipoAnimalInt = 3; // Suíno
         } else if (tipoAnimal instanceof Ave) {
             String tipoFrango = Teclado.readString("Digite o tipo de frango:");
             tipoAnimal = new Ave(id, peso, idade, data, tipoFrango);
@@ -191,19 +208,16 @@ public static void cadastrarAnimal(Animal tipoAnimal) {
 
         for (Lote<Animal> lote : listaLotes) {
             if (lote.getIdLote() == idLote) {
-                lote.adicionarLote(tipoAnimal, tipoAnimalInt, idLote);
-                System.out.println("Animal cadastrado com sucesso!");
+                lote.adicionarLote(tipoAnimal, tipoAnimalInt, idLote); // Usando adicionarLote
                 return;
             }
         }
         System.out.println("Lote não encontrado. Animal não cadastrado.");
     }
 
-
     public static void cadastrarLote() {
         int idLote = Teclado.readInt("Digite o ID do lote:");
 
-        // Verifica se já existe um lote com o ID informado
         for (Lote<Animal> lote : listaLotes) {
             if (lote.getIdLote() == idLote) {
                 System.out.println("Erro: Já existe um lote com o ID " + idLote + ". Cadastro cancelado.");
@@ -211,7 +225,6 @@ public static void cadastrarAnimal(Animal tipoAnimal) {
             }
         }
 
-        // Solicita o tipo de animal com validação
         int tipoAnimal = 0;
         while (tipoAnimal < 1 || tipoAnimal > 3) {
             System.out.println("Escolha o tipo de animal para este lote:");
@@ -225,7 +238,6 @@ public static void cadastrarAnimal(Animal tipoAnimal) {
             }
         }
 
-        // Cria o lote e adiciona à lista
         Lote<Animal> novoLote = new Lote<>();
         novoLote.setIdLote(idLote);
         novoLote.setTipoAnimal(tipoAnimal);
@@ -233,7 +245,6 @@ public static void cadastrarAnimal(Animal tipoAnimal) {
 
         System.out.println("Lote cadastrado com sucesso!");
     }
-
 
     public static void salvarLotes() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(LOTES_FILE))) {
@@ -262,7 +273,7 @@ public static void cadastrarAnimal(Animal tipoAnimal) {
                 }
             }
         }
-        return null; // Retorna null se não encontrar o animal
+        return null;
     }
 
     public static void visualizarAnimal() {
@@ -331,6 +342,4 @@ public static void cadastrarAnimal(Animal tipoAnimal) {
             System.out.println("Animal com ID " + id + " não encontrado");
         }
     }
-
-
 }
