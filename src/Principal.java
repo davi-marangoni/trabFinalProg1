@@ -10,7 +10,7 @@ public class Principal {
     private static final String LOTES_FILE = "lotes.ser";
 
     public static void main(String[] args) {
-        carregarLotes(); // Carregar os lotes salvos no início
+        carregarDados(); // Carregar os lotes salvos no início
         boolean continuar = true;
 
         while (continuar) {
@@ -26,7 +26,7 @@ public class Principal {
                     break;
 
                 case 3:
-                    salvarLotes();
+                    salvarDados();
                     continuar = false;
                     break;
                 default:
@@ -246,7 +246,7 @@ public class Principal {
         System.out.println("Lote cadastrado com sucesso!");
     }
 
-    public static void salvarLotes() {
+    public static void salvarDados() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(LOTES_FILE))) {
             oos.writeObject(listaLotes);
             System.out.println("Lotes salvos com sucesso!");
@@ -256,7 +256,7 @@ public class Principal {
     }
 
     @SuppressWarnings("unchecked")
-    public static void carregarLotes() {
+    public static void carregarDados() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(LOTES_FILE))) {
             listaLotes = (List<Lote<Animal>>) ois.readObject();
             System.out.println("Lotes carregados com sucesso!");
