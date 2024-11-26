@@ -159,7 +159,7 @@ public class Teclado {
                 data = LocalDate.parse(entrada, formatter);
                 dataValida = true;
             } catch (DateTimeParseException e) {
-                System.out.println("Formato inválido! Certifique-se de usar o formato AAAA-MM-DD.");
+                System.out.println("Formato invalido! Certifique-se de usar o formato AAAA-MM-DD.");
             }
         }
 

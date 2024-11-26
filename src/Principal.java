@@ -229,9 +229,9 @@ public class Principal {
     public static void salvarDados() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(LOTES_FILE))) {
             oos.writeObject(listaLotes);
-            System.out.println("Lotes salvos com sucesso!");
+            System.out.println("Dados salvos com sucesso!");
         } catch (IOException e) {
-            System.err.println("Erro ao salvar os lotes: " + e.getMessage());
+            System.err.println("Erro ao salvar os dados: " + e.getMessage());
         }
     }
 
@@ -239,9 +239,9 @@ public class Principal {
     public static void carregarDados() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(LOTES_FILE))) {
             listaLotes = (List<Lote<Animal>>) ois.readObject();
-            System.out.println("Lotes carregados com sucesso!");
+            System.out.println("Dados carregados com sucesso!");
         } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Nenhum lote encontrado para carregar");
+            System.out.println("Nenhum dado encontrado para carregar");
         }
     }
 
