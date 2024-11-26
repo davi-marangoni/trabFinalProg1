@@ -10,12 +10,12 @@ public class Principal {
     private static final String LOTES_FILE = "lotes.ser";
 
     public static void main(String[] args) {
-        carregarDados(); // Carregar os lotes salvos no início
+        carregarDados();
         boolean continuar = true;
 
         while (continuar) {
             menuGeral();
-            int opcao = Teclado.readInt("Qual sua opção?");
+            int opcao = Teclado.readInt("Qual sua opcao?");
             switch (opcao) {
                 case 1:
                     gerenciarLote();
@@ -30,7 +30,7 @@ public class Principal {
                     continuar = false;
                     break;
                 default:
-                    System.out.println("Opção inválida. Tente novamente!");
+                    System.out.println("Opcao invalida. Tente novamente!");
             }
         }
     }
@@ -44,7 +44,7 @@ public class Principal {
 
     public static void gerenciarLote() {
         menuLote();
-        int opcao = Teclado.readInt("Escolha uma opção:");
+        int opcao = Teclado.readInt("Escolha uma opcao:");
         switch (opcao) {
             case 1:
                 cadastrarLote();
@@ -65,20 +65,20 @@ public class Principal {
                 System.out.println("Saindo do gerenciamento de lotes.");
                 break;
             default:
-                System.out.println("Opção inválida.");
+                System.out.println("Opcao invalida.");
         }
     }
 
     public static void gerenciarAnimal() {
         menuAnimal();
-        int opcao = Teclado.readInt("Escolha uma opção:");
+        int opcao = Teclado.readInt("Escolha uma opcao:");
         switch (opcao) {
             case 1:
                 System.out.println("Escolha o tipo de animal que deseja cadastrar:");
                 System.out.println("1 - Bovino");
                 System.out.println("2 - Ave");
                 System.out.println("3 - Suíno");
-                int opcaoAnimal = Teclado.readInt("Escolha uma opção:");
+                int opcaoAnimal = Teclado.readInt("Escolha uma opcao:");
 
                 if (opcaoAnimal == 1) {
                     cadastrarAnimal(new Bovino(0, 0, 0, LocalDate.now(), "", 0, 0));
@@ -87,7 +87,7 @@ public class Principal {
                 } else if (opcaoAnimal == 3) {
                     cadastrarAnimal(new Suino(0, 0, 0, LocalDate.now(), 0));
                 } else {
-                    System.out.println("Opção inválida.");
+                    System.out.println("Opcao invalida.");
                 }
                 break;
             case 2:
@@ -100,7 +100,7 @@ public class Principal {
                 System.out.println("Saindo do gerenciamento de animais.");
                 break;
             default:
-                System.out.println("Opção inválida.");
+                System.out.println("Opcao invalida.");
         }
     }
 
@@ -123,13 +123,19 @@ public class Principal {
     }
 
     public static void excluirLote() {
-        int idLote = Teclado.readInt("Digite o ID do lote a excluir:");
-        boolean loteRemovido = listaLotes.removeIf(lote -> lote.getIdLote() == idLote);
+        try {
+            int idLote = Teclado.readInt("Digite o ID do lote a excluir:");
+            boolean loteRemovido = listaLotes.removeIf(lote -> lote.getIdLote() == idLote);
 
-        if (loteRemovido) {
-            System.out.println("Lote excluído com sucesso!");
-        } else {
-            System.out.println("Lote não encontrado.");
+            if (!loteRemovido) {
+                throw new LoteNaoExisteException("Lote nao encontrado.");
+            }
+
+            System.out.println("Lote excluido com sucesso!");
+        } catch (LoteNaoExisteException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Erro ao excluir lote: " + e.getMessage());
         }
     }
 
@@ -144,106 +150,80 @@ public class Principal {
     }
 
     public static void listarLote() {
-        int idLote = Teclado.readInt("Digite o ID do lote a listar:");
-        for (Lote<Animal> lote : listaLotes) {
-            if (lote.getIdLote() == idLote) {
-                lote.imprimirLote(idLote);
-                return;
+        try {
+            int idLote = Teclado.readInt("Digite o ID do lote a listar:");
+            for (Lote<Animal> lote : listaLotes) {
+                if (lote.getIdLote() == idLote) {
+                    lote.imprimirLote(idLote);
+                    return;
+                }
             }
+            throw new LoteNaoExisteException("Lote nao encontrado.");
+        } catch (LoteNaoExisteException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Erro ao listar lote: " + e.getMessage());
         }
-        System.out.println("Lote não encontrado.");
     }
 
     public static void removerAnimalDeLote() {
-        int idAnimal = Teclado.readInt("Digite o ID do animal a remover:");
-        boolean encontrado = false;
+        try {
+            int idAnimal = Teclado.readInt("Digite o ID do animal a remover:");
+            boolean encontrado = false;
 
-        for (Lote<Animal> lote : listaLotes) {
-            if (lote.removerAnimalote(idAnimal)) {
-                encontrado = true;
-                break;
+            for (Lote<Animal> lote : listaLotes) {
+                if (lote.removerAnimalote(idAnimal)) {
+                    encontrado = true;
+                    break;
+                }
             }
-        }
 
-        if (encontrado) {
+            if (!encontrado) {
+                throw new AnimalNaoEncontradoException("Animal nao encontrado.");
+            }
+
             System.out.println("Animal removido com sucesso.");
-        } else {
-            System.out.println("Animal não encontrado.");
+        } catch (AnimalNaoEncontradoException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Erro ao remover animal: " + e.getMessage());
         }
-    }
-
-    public static void cadastrarAnimal(Animal tipoAnimal) {
-        int id = Teclado.readInt("Digite o ID do animal:");
-
-        Animal animal = buscarAnimalPorID(id);
-
-        if (animal != null) {
-            System.out.println("ID já cadastrado. Tente novamente.");
-            return;
-        }
-
-        double peso = Teclado.readDouble("Digite o peso do animal:");
-        int idade = Teclado.readInt("Digite a idade do animal:");
-        LocalDate data = Teclado.readDate("Digite a data de chegada (AAAA-MM-DD):");
-        int idLote = Teclado.readInt("Digite o ID do lote para associar:");
-
-        int tipoAnimalInt = 0; // Determinar o tipo de animal
-        if (tipoAnimal instanceof Bovino) {
-            String raca = Teclado.readString("Digite a raça do bovino:");
-            double percentualMusculo = Teclado.readDouble("Digite o percentual de músculo:");
-            double percentualGordura = Teclado.readDouble("Digite o percentual de gordura:");
-            tipoAnimal = new Bovino(id, peso, idade, data, raca, percentualMusculo, percentualGordura);
-            tipoAnimalInt = 1; // Bovino
-        } else if (tipoAnimal instanceof Suino) {
-            double percentualCarneMagra = Teclado.readDouble("Digite o percentual de carne magra:");
-            tipoAnimal = new Suino(id, peso, idade, data, percentualCarneMagra);
-            tipoAnimalInt = 3; // Suíno
-        } else if (tipoAnimal instanceof Ave) {
-            String tipoFrango = Teclado.readString("Digite o tipo de frango:");
-            tipoAnimal = new Ave(id, peso, idade, data, tipoFrango);
-            tipoAnimalInt = 2; // Ave
-        }
-
-        tipoAnimal.setIDlote(idLote);
-
-        for (Lote<Animal> lote : listaLotes) {
-            if (lote.getIdLote() == idLote) {
-                lote.adicionarLote(tipoAnimal, tipoAnimalInt, idLote); // Usando adicionarLote
-                return;
-            }
-        }
-        System.out.println("Lote não encontrado. Animal não cadastrado.");
     }
 
     public static void cadastrarLote() {
-        int idLote = Teclado.readInt("Digite o ID do lote:");
+        try {
+            int idLote = Teclado.readInt("Digite o ID do lote:");
 
-        for (Lote<Animal> lote : listaLotes) {
-            if (lote.getIdLote() == idLote) {
-                System.out.println("Erro: Já existe um lote com o ID " + idLote + ". Cadastro cancelado.");
-                return;
+            for (Lote<Animal> lote : listaLotes) {
+                if (lote.getIdLote() == idLote) {
+                    throw new LoteJaExisteException("Erro: Ja existe um lote com o ID " + idLote);
+                }
             }
-        }
 
-        int tipoAnimal = 0;
-        while (tipoAnimal < 1 || tipoAnimal > 3) {
-            System.out.println("Escolha o tipo de animal para este lote:");
-            System.out.println("1 - Bovino");
-            System.out.println("2 - Ave");
-            System.out.println("3 - Suíno");
-            tipoAnimal = Teclado.readInt("Digite o número correspondente ao tipo:");
+            int tipoAnimal = 0;
+            while (tipoAnimal < 1 || tipoAnimal > 3) {
+                System.out.println("Escolha o tipo de animal para este lote:");
+                System.out.println("1 - Bovino");
+                System.out.println("2 - Ave");
+                System.out.println("3 - Suino");
+                tipoAnimal = Teclado.readInt("Digite o numero correspondente ao tipo:");
 
-            if (tipoAnimal < 1 || tipoAnimal > 3) {
-                System.out.println("\nErro: Tipo de animal inválido. Tente novamente.\n");
+                if (tipoAnimal < 1 || tipoAnimal > 3) {
+                    System.out.println("\nErro: Tipo de animal invalido. Tente novamente.\n");
+                }
             }
+
+            Lote<Animal> novoLote = new Lote<>();
+            novoLote.setIdLote(idLote);
+            novoLote.setTipoAnimal(tipoAnimal);
+            listaLotes.add(novoLote);
+
+            System.out.println("Lote cadastrado com sucesso!");
+        } catch (LoteJaExisteException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Erro ao cadastrar lote: " + e.getMessage());
         }
-
-        Lote<Animal> novoLote = new Lote<>();
-        novoLote.setIdLote(idLote);
-        novoLote.setTipoAnimal(tipoAnimal);
-        listaLotes.add(novoLote);
-
-        System.out.println("Lote cadastrado com sucesso!");
     }
 
     public static void salvarDados() {
@@ -276,22 +256,105 @@ public class Principal {
         return null;
     }
 
-    public static void visualizarAnimal() {
-        int id = Teclado.readInt("Digite o ID do animal que deseja visualizar:");
-        Animal animal = buscarAnimalPorID(id);
+    public static class AnimalJaExisteException extends Exception {
+        public AnimalJaExisteException(String message) {
+            super(message);
+        }
+    }
 
-        if (animal != null) {
+    public static class LoteNaoExisteException extends Exception {
+        public LoteNaoExisteException(String message) {
+            super(message);
+        }
+    }
+
+    public static class LoteJaExisteException extends Exception {
+        public LoteJaExisteException(String message) {
+            super(message);
+        }
+    }
+
+    public static void cadastrarAnimal(Animal tipoAnimal) {
+        try {
+            int id = Teclado.readInt("Digite o ID do animal:");
+            Animal animal = buscarAnimalPorID(id);
+
+            if (animal != null) {
+                throw new AnimalJaExisteException("ID ja cadastrado. Tente novamente.");
+            }
+
+            double peso = Teclado.readDouble("Digite o peso do animal:");
+            int idade = Teclado.readInt("Digite a idade do animal (em dias):");
+            LocalDate data = Teclado.readDate("Digite a data de chegada (AAAA-MM-DD):");
+            int idLote = Teclado.readInt("Digite o ID do lote para associar:");
+
+            int tipoAnimalInt = 0;
+            if (tipoAnimal instanceof Bovino) {
+                String raca = Teclado.readString("Digite a raça do bovino:");
+                double percentualMusculo = Teclado.readDouble("Digite o percentual de musculo:");
+                double percentualGordura = Teclado.readDouble("Digite o percentual de gordura:");
+                tipoAnimal = new Bovino(id, peso, idade, data, raca, percentualMusculo, percentualGordura);
+                tipoAnimalInt = 1; // Bovino
+            } else if (tipoAnimal instanceof Suino) {
+                double percentualCarneMagra = Teclado.readDouble("Digite o percentual de carne magra:");
+                tipoAnimal = new Suino(id, peso, idade, data, percentualCarneMagra);
+                tipoAnimalInt = 3; // Suíno
+            } else if (tipoAnimal instanceof Ave) {
+                String tipoFrango = Teclado.readString("Digite o tipo de frango:");
+                tipoAnimal = new Ave(id, peso, idade, data, tipoFrango);
+                tipoAnimalInt = 2; // Ave
+            }
+
+            tipoAnimal.setIDlote(idLote);
+
+            boolean loteEncontrado = false;
+            for (Lote<Animal> lote : listaLotes) {
+                if (lote.getIdLote() == idLote) {
+                    lote.adicionarLote(tipoAnimal, tipoAnimalInt, idLote);
+                    loteEncontrado = true;
+                    break;
+                }
+            }
+
+            if (!loteEncontrado) {
+                throw new LoteNaoExisteException("Lote nao encontrado. Animal nao cadastrado.");
+            }
+
+            System.out.println("Animal cadastrado com sucesso!");
+        } catch (AnimalJaExisteException | LoteNaoExisteException e) {
+            System.out.println("Erro ao cadastrar animal: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Erro ao cadastrar animal: " + e.getMessage());
+        }
+    }
+
+    public static class AnimalNaoEncontradoException extends Exception {
+        public AnimalNaoEncontradoException(String message) {
+            super(message);
+        }
+    }
+
+
+    public static void visualizarAnimal() {
+        try {
+            int id = Teclado.readInt("Digite o ID do animal que deseja visualizar:");
+            Animal animal = buscarAnimalPorID(id);
+
+            if (animal == null) {
+                throw new AnimalNaoEncontradoException("Animal com ID " + id + " nao encontrado");
+            }
+            
             System.out.println("Informações do Animal:");
             System.out.println("ID: " + animal.getID());
             System.out.println("Peso: " + animal.getPeso());
-            System.out.println("Idade: " + animal.getIdade());
+            System.out.println("Idade (em dias): " + animal.getIdade());
             System.out.println("Data de Chegada: " + animal.getDataChegada());
             System.out.println("Lote ID: " + animal.getIDlote());
 
             if (animal instanceof Bovino) {
                 Bovino bovino = (Bovino) animal;
-                System.out.println("Raça: " + bovino.getRacaBoi());
-                System.out.println("Percentual de Músculo: " + bovino.getPercentualMusculo());
+                System.out.println("Raca: " + bovino.getRacaBoi());
+                System.out.println("Percentual de Musculo: " + bovino.getPercentualMusculo());
                 System.out.println("Percentual de Gordura: " + bovino.getPercentualGordura());
             } else if (animal instanceof Suino) {
                 Suino suino = (Suino) animal;
@@ -300,20 +363,27 @@ public class Principal {
                 Ave ave = (Ave) animal;
                 System.out.println("Tipo de Frango: " + ave.getTipoFrango());
             }
-        } else {
-            System.out.println("Animal com ID " + id + " não encontrado.");
-        }
+
+        } catch (AnimalNaoEncontradoException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Erro ao visualizar animal: " + e.getMessage());
+        } 
     }
 
     public static void editarAnimal() {
-        int id = Teclado.readInt("Digite o ID do animal que deseja editar:");
-        Animal animal = buscarAnimalPorID(id);
+        try {
+            int id = Teclado.readInt("Digite o ID do animal que deseja editar:");
+            Animal animal = buscarAnimalPorID(id);
 
-        if (animal != null) {
+            if (animal == null) {
+                throw new AnimalNaoEncontradoException("Animal com ID " + id + " nao encontrado");
+            }
+
             System.out.println("Editando o animal com ID " + id);
 
             double novoPeso = Teclado.readDouble("Digite o novo peso do animal:");
-            int novaIdade = Teclado.readInt("Digite a nova idade do animal:");
+            int novaIdade = Teclado.readInt("Digite a nova idade do animal (em dias):");
             LocalDate novaData = Teclado.readDate("Digite a nova data de chegada (AAAA-MM-DD):");
             animal.setPeso(novoPeso);
             animal.setIdade(novaIdade);
@@ -321,25 +391,34 @@ public class Principal {
 
             if (animal instanceof Bovino) {
                 Bovino bovino = (Bovino) animal;
-                String novaRaca = Teclado.readString("Digite a nova raça do bovino:");
-                double novoPercentualMusculo = Teclado.readDouble("Digite o novo percentual de músculo:");
+                String novaRaca = Teclado.readString("Digite a nova raca do bovino:");
+                double novoPercentualMusculo = Teclado.readDouble("Digite o novo percentual de musculo:");
                 double novoPercentualGordura = Teclado.readDouble("Digite o novo percentual de gordura:");
+
                 bovino.setRacaBoi(novaRaca);
                 bovino.setPercentualMusculo(novoPercentualMusculo);
                 bovino.setPercentualGordura(novoPercentualGordura);
+            
             } else if (animal instanceof Suino) {
+
                 Suino suino = (Suino) animal;
                 double novoPercentualCarneMagra = Teclado.readDouble("Digite o novo percentual de carne magra:");
                 suino.setPercentualCarneMagra(novoPercentualCarneMagra);
+
             } else if (animal instanceof Ave) {
+
                 Ave ave = (Ave) animal;
                 String novoTipoFrango = Teclado.readString("Digite o novo tipo de frango:");
                 ave.setTipoFrango(novoTipoFrango);
+
             }
 
             System.out.println("Animal atualizado com sucesso!");
-        } else {
-            System.out.println("Animal com ID " + id + " não encontrado");
+
+        } catch (AnimalNaoEncontradoException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Erro ao editar animal: " + e.getMessage());
         }
     }
 }
