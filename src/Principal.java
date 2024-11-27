@@ -9,6 +9,11 @@ public class Principal {
     private static List<Lote<Animal>> listaLotes = new ArrayList<>();
     private static final String LOTES_FILE = "lotes.ser";
 
+
+    /**
+     * Metodo principal da aplicação. 
+     * Carrega os dados iniciais, apresenta o menu principal e controla o fluxo do programa.
+     */
     public static void main(String[] args) {
         carregarDados();
         boolean continuar = true;
@@ -35,6 +40,9 @@ public class Principal {
         }
     }
 
+    /**
+     * Exibe o menu principal com as opções disponiveis para o usuario.
+     */
     public static void menuGeral() {
         System.out.println("\n===== MENU PRINCIPAL =====");
         System.out.println("1 - Gerenciar Lotes.");
@@ -42,6 +50,9 @@ public class Principal {
         System.out.println("3 - Sair e Salvar.");
     }
 
+    /**
+     * Gerencia as operacoes relacionadas a lotes, apresentando um menu especifico.
+     */
     public static void gerenciarLote() {
         menuLote();
         int opcao = Teclado.readInt("Escolha uma opcao:");
@@ -69,6 +80,9 @@ public class Principal {
         }
     }
 
+    /**
+     * Gerencia as operacoes relacionadas a animais, apresentando um menu especifico.
+     */
     public static void gerenciarAnimal() {
         menuAnimal();
         int opcao = Teclado.readInt("Escolha uma opcao:");
@@ -104,6 +118,9 @@ public class Principal {
         }
     }
 
+    /**
+     * Exibe o menu especifico para gerenciamento de lotes.
+     */
     public static void menuLote() {
         System.out.println("\n===== GERENCIAR LOTE =====");
         System.out.println("1 - Cadastrar Lote");
@@ -114,6 +131,9 @@ public class Principal {
         System.out.println("6 - Sair");
     }
 
+    /**
+     * Exibe o menu especifico para gerenciamento de animais.
+     */
     public static void menuAnimal() {
         System.out.println("\n===== GERENCIAR ANIMAL =====");
         System.out.println("1 - Cadastrar Animal");
@@ -122,6 +142,9 @@ public class Principal {
         System.out.println("4 - Sair");
     }
 
+    /**
+     * Exclui um lote com base no ID informado pelo usuario.
+     */
     public static void excluirLote() {
         try {
             int idLote = Teclado.readInt("Digite o ID do lote a excluir:");
@@ -139,6 +162,9 @@ public class Principal {
         }
     }
 
+    /**
+     * Lista todos os lotes cadastrados.
+     */
     public static void listarLotes() {
         if (listaLotes.isEmpty()) {
             System.out.println("Nenhum lote cadastrado.");
@@ -149,6 +175,9 @@ public class Principal {
         }
     }
 
+    /**
+     * Lista informacoes de um lote especifico com base no ID informado pelo usuario.
+     */
     public static void listarLote() {
         try {
             int idLote = Teclado.readInt("Digite o ID do lote a listar:");
@@ -166,6 +195,9 @@ public class Principal {
         }
     }
 
+    /**
+     * Remove um animal de um lote com base no ID informado pelo usuusuarioário.
+     */
     public static void removerAnimalDeLote() {
         try {
             int idAnimal = Teclado.readInt("Digite o ID do animal a remover:");
@@ -190,6 +222,9 @@ public class Principal {
         }
     }
 
+    /**
+     * Cadastra um novo lote com base nos dados fornecidos pelo usuario.
+     */
     public static void cadastrarLote() {
         try {
             int idLote = Teclado.readInt("Digite o ID do lote:");
@@ -226,6 +261,10 @@ public class Principal {
         }
     }
 
+
+    /**
+     * Salva os dados do programa em um arquivo.
+     */
     public static void salvarDados() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(LOTES_FILE))) {
             oos.writeObject(listaLotes);
@@ -235,6 +274,9 @@ public class Principal {
         }
     }
 
+    /**
+     * Carrega os dados do programa de um arquivo, se disponivel.
+     */
     @SuppressWarnings("unchecked")
     public static void carregarDados() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(LOTES_FILE))) {
@@ -245,6 +287,12 @@ public class Principal {
         }
     }
 
+    /**
+     * Busca um animal pelo ID em todos os lotes cadastrados.
+     * 
+     * @param id O ID do animal a ser buscado.
+     * @return O objeto Animal correspondente ao ID fornecido, ou null caso não seja encontrado.
+     */
     public static Animal buscarAnimalPorID(int id) {
         for (Lote<Animal> lote : listaLotes) {
             for (Animal animal : lote) {
@@ -256,24 +304,39 @@ public class Principal {
         return null;
     }
 
+    /**
+     * Excecao lancada quando se tenta cadastrar um animal com um ID ja existente.
+     */
     public static class AnimalJaExisteException extends Exception {
         public AnimalJaExisteException(String message) {
             super(message);
         }
     }
 
+    /**
+     * Excecao lancada quando um lote solicitado nao existe.
+     */
     public static class LoteNaoExisteException extends Exception {
         public LoteNaoExisteException(String message) {
             super(message);
         }
     }
 
+    /**
+     * Excecao lancada quando se tenta cadastrar um lote com um ID ja existente.
+     */
     public static class LoteJaExisteException extends Exception {
         public LoteJaExisteException(String message) {
             super(message);
         }
     }
 
+    /**
+     * Cadastra um novo animal em um lote existente.
+     * 
+     * @param tipoAnimal O objeto Animal que sera cadastrado.
+     *                   Deve ser uma instancia de Bovino, Suino ou Ave.
+     */
     public static void cadastrarAnimal(Animal tipoAnimal) {
         try {
             int id = Teclado.readInt("Digite o ID do animal:");
@@ -320,7 +383,6 @@ public class Principal {
                 throw new LoteNaoExisteException("Lote nao encontrado. Animal nao cadastrado.");
             }
 
-            System.out.println("Animal cadastrado com sucesso!");
         } catch (AnimalJaExisteException | LoteNaoExisteException e) {
             System.out.println("Erro ao cadastrar animal: " + e.getMessage());
         } catch (Exception e) {
@@ -328,13 +390,18 @@ public class Principal {
         }
     }
 
+    /**
+     * Excecao lancada quando um animal nao e encontrado.
+     */
     public static class AnimalNaoEncontradoException extends Exception {
         public AnimalNaoEncontradoException(String message) {
             super(message);
         }
     }
 
-
+    /**
+     * Visualiza as informacoes de um animal especifico com base no ID fornecido.
+     */
     public static void visualizarAnimal() {
         try {
             int id = Teclado.readInt("Digite o ID do animal que deseja visualizar:");
@@ -371,6 +438,9 @@ public class Principal {
         } 
     }
 
+    /**
+     * Edita as informacoes de um animal existente com base no ID fornecido.
+     */
     public static void editarAnimal() {
         try {
             int id = Teclado.readInt("Digite o ID do animal que deseja editar:");

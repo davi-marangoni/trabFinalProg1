@@ -1,9 +1,8 @@
 package animais.animais;
 
 import java.time.LocalDate;
-import java.io.Serializable;
 
-public class Ave extends Animal implements Serializable {
+public class Ave extends Animal {
     private static final long serialVersionUID = 1L;
     private String tipoFrango;
 

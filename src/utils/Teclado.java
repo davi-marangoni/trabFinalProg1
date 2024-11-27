@@ -147,8 +147,15 @@ public class Teclado {
 
     }
 
-    public static LocalDate readDate(String mensagem) {
-        System.out.println("\n" + mensagem);
+    /**
+     * Método que lê uma data no formato especificado (AAAA-MM-DD). 
+     * Permite indicar uma mensagem com argumento de entrada para orientar o usuário.
+     * Caso o valor digitado não esteja em um formato válido de data,
+     * apresenta uma mensagem de erro e solicita que o valor seja digitado novamente.
+     * 
+     * @return A data lida no formato LocalDate.
+     */
+    public static LocalDate readDate() {
         LocalDate data = null;
         boolean dataValida = false;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -165,4 +172,21 @@ public class Teclado {
 
         return data;
     }
+
+    /**
+     * Sobrecarga do método que lê uma data. 
+     * Possibilita indicar uma mensagem com argumento de entrada.
+     * Caso o valor digitado não seja uma String,
+     * apresenta uma mensagem informando e pedindo para que seja digitado novamente.
+     * 
+     * @param mensagem A mensagem que será exibida ao usuário antes da entrada.
+     * @return A data lida no dado de entrada
+     */
+    public static LocalDate readDate(String mensagem) {
+
+        System.out.println("\n" + mensagem);
+        return readDate();
+
+    }
+
 }
